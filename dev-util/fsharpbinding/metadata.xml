@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer>
+		<email>Heather@Cynede.net</email>
+	</maintainer>
+	<longdescription>
+	  Monodevelop / emacs F# bindings
+	</longdescription>
+    <use>
+      <flag name='monodevelop'>Install monodevelop binding</flag>
+    </use>
+</pkgmetadata>
