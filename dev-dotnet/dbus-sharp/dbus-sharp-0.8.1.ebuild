@@ -3,14 +3,15 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-dotnet/dbus-sharp/dbus-sharp-0.7.0-r1.ebuild,v 1.6 2012/08/18 12:24:40 xmw Exp $
 
 EAPI="4"
-inherit mono eutils
+inherit mono eutils git-2 autotools
 
 DESCRIPTION="D-Bus for .NET"
-HOMEPAGE="https://github.com/mono/dbus-sharp"
-SRC_URI="mirror://github/mono/${PN}/${P}.tar.gz"
+HOMEPAGE="https://github.com/arfbtwn/dbus-sharp"
+#SRC_URI="mirror://github/arfbtwn/${PN}/${P}.tar.gz"
+EGIT_REPO_URI="https://github.com/arfbtwn/dbus-sharp.git"
 
 LICENSE="MIT"
-SLOT="0"
+SLOT="1"
 KEYWORDS="amd64 ppc x86"
 IUSE=""
 
@@ -25,7 +26,9 @@ pkg_setup() {
 
 src_prepare() {
 	# Fix signals, bug #387097
-	epatch "${FILESDIR}/${P}-fix-signals.patch"
-	epatch "${FILESDIR}/${P}-fix-signals2.patch"
+	#epatch "${FILESDIR}/${P}-fix-signals.patch"
+	#epatch "${FILESDIR}/${P}-fix-signals2.patch"
 	epatch_user
+
+	eautoreconf
 }

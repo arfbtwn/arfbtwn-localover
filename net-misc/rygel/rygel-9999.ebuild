@@ -5,7 +5,7 @@
 EAPI="5"
 GCONF_DEBUG="no"
 
-inherit autotools git-2 
+inherit autotools git-2
 
 DESCRIPTION="Rygel is an open source UPnP/DLNA MediaServer"
 HOMEPAGE="http://live.gnome.org/Rygel"
@@ -54,9 +54,9 @@ DEPEND="${RDEPEND}
     dev-libs/libxslt
 "
 src_prepare() {
+	epatch_user	
 	eautoreconf
 
-	epatch_user	
 	# runs gst-plugins-scanner on run with triggers sandbox violation
 	# trying to open dri
 	sed -e 's/rygel-media-engine-test$(EXEEXT)//' \

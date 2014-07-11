@@ -8,7 +8,7 @@ inherit eutils autotools mono-env gnome2-utils fdo-mime versionator git-2
 DESCRIPTION="Import, organize, play, and share your music using a simple and powerful interface."
 HOMEPAGE="http://banshee.fm/"
 SRC_URI=""
-EGIT_REPO_URI="https://github.com/arfbtwn/banshee.git"
+EGIT_REPO_URI="https://github.com/GNOME/banshee.git"
 EGIT_HAS_SUBMODULES=1
 
 LICENSE="MIT"

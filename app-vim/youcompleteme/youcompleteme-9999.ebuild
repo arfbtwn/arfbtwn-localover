@@ -4,7 +4,7 @@
 
 EAPI=5
 PYTHON_COMPAT=( python{2_6,2_7} )
-inherit multilib python-single-r1 cmake-utils vim-plugin
+inherit multilib python-single-r1 vim-plugin
 
 if [[ ${PV} == 9999* ]] ; then
 	EGIT_REPO_URI="git://github.com/Valloric/YouCompleteMe.git"
@@ -40,16 +40,18 @@ VIM_PLUGIN_HELPFILES="${PN}"
 
 src_prepare() {
 	if ! use test ; then
-		sed -i '/^add_subdirectory( tests )/d' cpp/ycm/CMakeLists.txt || die
+		sed -i '/^add_subdirectory( tests )/d' third_party/ycmd/cpp/ycm/CMakeLists.txt || die
 	fi
 }
 
 src_configure() {
-	local mycmakeargs=(
-		$(cmake-utils_use_use clang CLANG_COMPLETER)
-		$(cmake-utils_use_use clang SYSTEM_LIBCLANG)
-	)
-	cmake-utils_src_configure
+	#local mycmakeargs=(
+	#	$(cmake-utils_use_use clang CLANG_COMPLETER)
+	#	$(cmake-utils_use_use clang SYSTEM_LIBCLANG)
+	#)
+	#cmake-utils_src_compile
+	cd "${S}"/third_party/ycmd
+	./build.sh --clang-completer --system-libclang --omnisharp-completer
 }
 
 src_test() {
