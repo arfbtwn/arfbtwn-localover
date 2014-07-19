@@ -23,8 +23,6 @@ inherit eutils versionator mono-env
 # @DESCRIPTION:
 # Use flags added to IUSE
 
-DEPEND+=" dev-lang/mono"
-
 # SET default use flags according on DOTNET_TARGETS
 for x in ${USE_DOTNET}; do
 	case ${x} in
@@ -79,9 +77,18 @@ export XDG_CONFIG_HOME="${T}"
 unset MONO_AOT_CACHE
 
 # @FUNCTION: exbuild
-# @DESCRIPTION: run xbuild with Release configuration and configurated FRAMEWORK
+# @DESCRIPTION: run xbuild with Release configuration and configured FRAMEWORK
 exbuild() {
 	xbuild "${1}" /p:Configuration=Release /tv:4.0 /p:TargetFrameworkVersion=v"${FRAMEWORK}" || die
+}
+
+# @FUNCTION: exbuild_dir
+# @DESCRIPTION: run xbuild with Release configuration and configured FRAMEWORK
+#				in the specified directory under "${S}"
+exbuild_dir() {
+	pushd "${S}/${1}"
+	xbuild /p:Configuration=Release /tv:4.0 /p:TargetFrameworkVersion=v"${FRAMEWORK}" || die
+	popd
 }
 
 # @FUNCTION: egacinstall

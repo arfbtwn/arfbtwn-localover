@@ -4,5 +4,6 @@
 <herd>vim</herd>
 <use>
 	<flag name="clang">Enable semantic support for C-family languages using <pkg>sys-devel/clang</pkg></flag>
+	<flag name="omnisharp">Build the OmniSharpServer for C# completion</flag>
 </use>
 </pkgmetadata>

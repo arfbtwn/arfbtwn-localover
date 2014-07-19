@@ -4,21 +4,17 @@
 
 EAPI=5
 PYTHON_COMPAT=( python{2_6,2_7} )
-inherit multilib python-single-r1 vim-plugin
+USE_DOTNET=net40
+DOTNET_TARGETS=net40
+inherit git-r3 cmake-utils dotnet multilib python-single-r1 vim-plugin
 
-if [[ ${PV} == 9999* ]] ; then
-	EGIT_REPO_URI="git://github.com/Valloric/YouCompleteMe.git"
-	inherit git-r3
-else
-	KEYWORDS="~amd64 ~x86"
-	SRC_URI="http://dev.gentoo.org/~radhermit/vim/${P}.tar.xz"
-fi
+EGIT_REPO_URI="git://github.com/Valloric/YouCompleteMe.git"
 
 DESCRIPTION="vim plugin: a code-completion engine for Vim"
 HOMEPAGE="http://valloric.github.io/YouCompleteMe/"
 
 LICENSE="GPL-3"
-IUSE="+clang test"
+IUSE="+clang +omnisharp test"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 RDEPEND="${PYTHON_DEPS}
@@ -26,7 +22,8 @@ RDEPEND="${PYTHON_DEPS}
 	|| (
 		app-editors/vim[python,${PYTHON_USEDEP}]
 		app-editors/gvim[python,${PYTHON_USEDEP}]
-	)"
+	)
+	omnisharp? ( dev-lang/mono )"
 DEPEND="${RDEPEND}
 	test? (
 		>=dev-python/mock-1.0.1[${PYTHON_USEDEP}]
@@ -34,24 +31,36 @@ DEPEND="${RDEPEND}
 	)"
 
 CMAKE_IN_SOURCE_BUILD=1
-CMAKE_USE_DIR=${S}/cpp
+CMAKE_USE_DIR=${S}/third_party/ycmd/cpp
+XBUILD_DIR=third_party/ycmd/third_party/OmniSharpServer
 
 VIM_PLUGIN_HELPFILES="${PN}"
 
-src_prepare() {
-	if ! use test ; then
-		sed -i '/^add_subdirectory( tests )/d' third_party/ycmd/cpp/ycm/CMakeLists.txt || die
-	fi
+pkg_setup() {
+	python-single-r1_pkg_setup
+	dotnet_pkg_setup
 }
 
+#src_prepare() {
+#	if ! use test ; then
+#		sed -i '/^add_subdirectory( tests )/d' third_party/ycmd/cpp/ycm/CMakeLists.txt || die
+#	fi
+#}
+
 src_configure() {
-	#local mycmakeargs=(
-	#	$(cmake-utils_use_use clang CLANG_COMPLETER)
-	#	$(cmake-utils_use_use clang SYSTEM_LIBCLANG)
-	#)
-	#cmake-utils_src_compile
-	cd "${S}"/third_party/ycmd
-	./build.sh --clang-completer --system-libclang --omnisharp-completer
+	local mycmakeargs=(
+		$(cmake-utils_use_use clang CLANG_COMPLETER)
+		$(cmake-utils_use_use clang SYSTEM_LIBCLANG)
+	)
+	cmake-utils_src_configure
+}
+
+src_compile() {
+	cmake-utils_src_compile
+
+	if use omnisharp; then
+	  exbuild_dir "${XBUILD_DIR}"
+	fi
 }
 
 src_test() {
@@ -68,9 +77,9 @@ src_test() {
 
 src_install() {
 	dodoc *.md
-	rm -r *.md *.sh COPYING.txt cpp || die
+	rm -r *.md *.sh COPYING.txt ${CMAKE_USE_DIR} || die
 	find python -name *test* -exec rm -rf {} + || die
-	rm python/libclang.so || die
+	rm third_party/ycmd/libclang.so || die
 
 	vim-plugin_src_install
 
