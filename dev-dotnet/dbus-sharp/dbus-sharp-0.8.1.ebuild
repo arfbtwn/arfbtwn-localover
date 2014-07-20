@@ -9,6 +9,7 @@ DESCRIPTION="D-Bus for .NET"
 HOMEPAGE="https://github.com/arfbtwn/dbus-sharp"
 #SRC_URI="mirror://github/arfbtwn/${PN}/${P}.tar.gz"
 EGIT_REPO_URI="https://github.com/arfbtwn/dbus-sharp.git"
+EGIT_BRANCH="bugfix-fsharp"
 
 LICENSE="MIT"
 SLOT="1"
@@ -25,9 +26,6 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# Fix signals, bug #387097
-	#epatch "${FILESDIR}/${P}-fix-signals.patch"
-	#epatch "${FILESDIR}/${P}-fix-signals2.patch"
 	epatch_user
 
 	eautoreconf
