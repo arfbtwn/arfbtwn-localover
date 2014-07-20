@@ -5,7 +5,6 @@
 EAPI=5
 PYTHON_COMPAT=( python{2_6,2_7} )
 USE_DOTNET=net40
-DOTNET_TARGETS=net40
 inherit git-r3 cmake-utils dotnet multilib python-single-r1 vim-plugin
 
 EGIT_REPO_URI="git://github.com/Valloric/YouCompleteMe.git"
@@ -14,7 +13,7 @@ DESCRIPTION="vim plugin: a code-completion engine for Vim"
 HOMEPAGE="http://valloric.github.io/YouCompleteMe/"
 
 LICENSE="GPL-3"
-IUSE="+clang +omnisharp test"
+IUSE="+clang test"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 RDEPEND="${PYTHON_DEPS}
@@ -22,8 +21,7 @@ RDEPEND="${PYTHON_DEPS}
 	|| (
 		app-editors/vim[python,${PYTHON_USEDEP}]
 		app-editors/gvim[python,${PYTHON_USEDEP}]
-	)
-	omnisharp? ( dev-lang/mono )"
+	)"
 DEPEND="${RDEPEND}
 	test? (
 		>=dev-python/mock-1.0.1[${PYTHON_USEDEP}]
@@ -41,11 +39,11 @@ pkg_setup() {
 	dotnet_pkg_setup
 }
 
-#src_prepare() {
-#	if ! use test ; then
-#		sed -i '/^add_subdirectory( tests )/d' third_party/ycmd/cpp/ycm/CMakeLists.txt || die
-#	fi
-#}
+src_prepare() {
+	if ! use test ; then
+		sed -i '/^add_subdirectory( tests )/d' third_party/ycmd/cpp/ycm/CMakeLists.txt || die
+	fi
+}
 
 src_configure() {
 	local mycmakeargs=(
@@ -58,7 +56,7 @@ src_configure() {
 src_compile() {
 	cmake-utils_src_compile
 
-	if use omnisharp; then
+	if use net40; then
 	  exbuild_dir "${XBUILD_DIR}"
 	fi
 }

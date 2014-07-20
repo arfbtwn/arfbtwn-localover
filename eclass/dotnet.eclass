@@ -31,6 +31,7 @@ for x in ${USE_DOTNET}; do
 		net35) if [[ ${DOTNET_TARGETS} == *net35* ]]; then IUSE+=" +net35"; else IUSE+=" net35"; fi;;
 		net20) if [[ ${DOTNET_TARGETS} == *net20* ]]; then IUSE+=" +net20"; else IUSE+=" net20"; fi;;
 	esac
+	DEPEND+="${x}? ( dev-lang/mono ) "
 done
 
 # @FUNCTION: dotnet_pkg_setup
