@@ -13,7 +13,7 @@ EGIT_HAS_SUBMODULES=1
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~*"
+KEYWORDS="amd64 x86"
 
 IUSE="daap bpm doc ipod karma mtp soundmenu test udev web youtube +gst-sharp gst-native"
 
@@ -69,7 +69,7 @@ src_prepare () {
 
 	# Don't build BPM extension when not wanted
 	if ! use bpm; then
-		sed -i -e 's:Banshee.Bpm:$(NULL):g' src/Extensions/Makefile.am || die
+		sed -i -e '/Banshee.Bpm/ d' src/Extensions/Makefile.am || die
 	fi
 
 	## Don't append -ggdb, bug #458632, upstream bug #698217

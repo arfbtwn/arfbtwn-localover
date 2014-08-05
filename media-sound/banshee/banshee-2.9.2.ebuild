@@ -15,7 +15,7 @@ LICENSE="MIT"
 SLOT="0"
 KEYWORDS="amd64 x86"
 
-IUSE="daap doc ipod karma mtp soundmenu test udev web youtube +gst-sharp gst-native"
+IUSE="daap bpm doc ipod karma mtp soundmenu test udev web youtube +gst-sharp gst-native"
 
 RDEPEND="
 	>=dev-lang/mono-3
@@ -23,7 +23,7 @@ RDEPEND="
 	sys-apps/dbus
 	>=dev-dotnet/gio-sharp-0.3
 	>=dev-dotnet/gnome-sharp-2
-	>=dev-dotnet/gtk-sharp-2.99:3
+	>=dev-dotnet/gtk-sharp-2.12.10
 	>=dev-dotnet/notify-sharp-0.4.0_pre20080912-r1
 	>=media-libs/gstreamer-1.0:1.0
 	media-plugins/gst-plugins-gconf:0.10
@@ -68,9 +68,9 @@ src_prepare () {
 	DOCS="AUTHORS HACKING NEWS README"
 
 	# Don't build BPM extension when not wanted
-	#if ! use bpm; then
-	#	sed -i -e 's:Banshee.Bpm:$(NULL):g' src/Extensions/Makefile.am || die
-	#fi
+	if ! use bpm; then
+		sed -i -e 's:Banshee.Bpm:$(NULL):g' src/Extensions/Makefile.am || die
+	fi
 
 	## Don't append -ggdb, bug #458632, upstream bug #698217
 	#sed -i -e 's:-ggdb3:$(NULL):g' libbanshee/Makefile.am || die
