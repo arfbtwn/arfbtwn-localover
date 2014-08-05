@@ -4,13 +4,13 @@
 
 EAPI="5"
 
-inherit autotools git-2
+inherit dotnet autotools git-2
 
 SLOT="3"
 DESCRIPTION="gtk bindings for mono"
 LICENSE="GPL-2"
 HOMEPAGE="http://www.mono-project.com/GtkSharp"
-KEYWORDS="~amd64"
+KEYWORDS="~*"
 #SRC_URI="https://github.com/mono/${PN}/archive/${PV}.zip"
 EGIT_REPO_URI="https://github.com/mono/gtk-sharp.git"
 IUSE="debug"
@@ -38,15 +38,14 @@ DEPEND="${RDEPEND}
 	sys-devel/automake:1.11"
 
 src_prepare() {
-	git_src_prepare
 	eautoreconf 
+	libtoolize
 }
 
 src_configure() {
 	econf	--disable-static \
 		--disable-dependency-tracking \
 		--disable-maintainer-mode \
-		--prefix=/usr/lib64/pkgconfig/../.. \
 		$(use_enable debug)
 }
 
@@ -56,6 +55,7 @@ src_compile() {
 
 src_install() {
 	default
-	#dotnet_multilib_comply
+	dotnet_multilib_comply
 	sed -i "s/\\r//g" "${D}"/usr/bin/* || die "sed failed"
 }
+
