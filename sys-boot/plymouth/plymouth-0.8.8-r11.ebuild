@@ -86,6 +86,9 @@ src_install() {
 	insinto /etc/plymouth
 	doins "${DISTDIR}"/gentoo-logo.png
 
+	# Move the bizcom icon
+	mv  "${D}"/usr/share/plymouth/bizcom.png "${D}"/etc/plymouth/bizcom.png
+
 	# If the user specifies branding then set the symlink
 	use branding && (
 		dosym /etc/plymouth/gentoo-logo.png /usr/share/plymouth/bizcom.png
