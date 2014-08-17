@@ -12,6 +12,9 @@
 			nouveau and vmwgfx at this moment)</flag>
 		<flag name="pango">Adds support for printing text on splash screen and
 			text prompts, e.g. for password</flag>
+		<flag name="logviewer">Adds the plymouth boot logviewer</flag>
+		<flag name="systemd">Adds systemd integration</flag>
+		<flag name="drm">Build DRM renderer</flag>
 	</use>
 	<longdescription lang="en">
 		Plymouth is an application that runs very early in the boot process
