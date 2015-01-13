@@ -8,25 +8,30 @@ inherit autotools-utils readme.gentoo systemd toolchain-funcs
 
 DESCRIPTION="Graphical boot animation (splash) and logger"
 HOMEPAGE="http://cgit.freedesktop.org/plymouth/"
-SRC_URI="
-	http://www.freedesktop.org/software/plymouth/releases/${P}.tar.bz2
-	http://dev.gentoo.org/~aidecoe/distfiles/${CATEGORY}/${PN}/gentoo-logo.png"
+SRC_URI="http://dev.gentoo.org/~aidecoe/distfiles/${CATEGORY}/${PN}/gentoo-logo.png"
+
+if [[ ${PV} == 9999 ]]; then
+	EGIT_REPO_URI="git://anongit.freedesktop.org/plymouth"
+	AUTOTOOLS_AUTORECONF="1"
+	inherit git-r3
+else
+	SRC_URI="${SRC_URI} http://www.freedesktop.org/software/plymouth/releases/${P}.tar.bz2"
+fi
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~ia64 ~ppc ~ppc64 ~sparc ~x86"
-IUSE_VIDEO_CARDS="video_cards_intel video_cards_radeon"
-IUSE="${IUSE_VIDEO_CARDS} debug gdm +gtk +libkms logviewer +pango static-libs systemd"
+KEYWORDS="~alpha ~amd64 ~arm ~ia64 ~ppc ~ppc64 ~sparc ~x86"
+IUSE="branding debug gdm +drm +logviewer +pango static-libs systemd"
 
 CDEPEND="
 	>=media-libs/libpng-1.2.16
-	gtk? (
+	logviewer? (
 		dev-libs/glib:2
 		>=x11-libs/gtk+-2.12:2 )
-	libkms? ( x11-libs/libdrm[libkms] )
+	drm? ( x11-libs/libdrm[libkms] )
 	pango? ( >=x11-libs/pango-1.21 )
-	video_cards_intel? ( x11-libs/libdrm[video_cards_intel] )
-	video_cards_radeon? ( x11-libs/libdrm[video_cards_radeon] )
+	systemd? ( sys-apps/systemd )
+	gdm? ( gnome-base/gdm )
 "
 DEPEND="${CDEPEND}
 	virtual/pkgconfig
@@ -51,24 +56,25 @@ src_prepare() {
 }
 
 src_configure() {
+	local mytty=tty1
 	local myeconfargs=(
-		--with-boot-tty=/dev/tty7
-		--with-shutdown-tty=/dev/tty7
-		--with-system-root-install=no
+		--with-release-file=/etc/gentoo-release
+		--with-system-root-install=yes
 		--localstatedir=/var
 		--without-rhgb-compat-link
 		--with-background-color=0x000000
 		--with-background-start-color-stop=0x000000
 		--with-background-end-color-stop=0x000000
+		--with-boot-tty=/dev/$mytty
+		--with-shutdown-tty=/dev/$mytty
+		$(use_enable static-libs static)
+		$(use_enable logviewer gtk)
 		$(use_with logviewer log-viewer)
 		$(use_enable systemd systemd-integration)
 		$(use_enable debug tracing)
-		$(use_enable gtk gtk)
-		$(use_enable libkms)
 		$(use_enable pango)
 		$(use_enable gdm gdm-transition)
-		$(use_enable video_cards_intel libdrm_intel)
-		$(use_enable video_cards_radeon libdrm_radeon)
+		$(use_enable drm)
 		)
 	autotools-utils_src_configure
 }
@@ -76,13 +82,26 @@ src_configure() {
 src_install() {
 	autotools-utils_src_install
 
-	insinto /usr/share/plymouth
-	newins "${DISTDIR}"/gentoo-logo.png bizcom.png
+	# Install the eselect module
+	insinto /usr/share/eselect/modules
+	doins "${FILESDIR}"/plymouth-logo.eselect
+
+	# Install the gentoo logo to the sysconf dir
+	insinto /etc/plymouth
+	doins "${DISTDIR}"/gentoo-logo.png
+
+	# Move the bizcom icon
+	mv  "${D}"/usr/share/plymouth/bizcom.png "${D}"/etc/plymouth/bizcom.png
+
+	# If the user specifies branding then set the symlink
+	use branding && (
+		dosym /etc/plymouth/gentoo-logo.png /usr/share/plymouth/bizcom.png
+	)
 
 	# Install compatibility symlinks as some rdeps hardcode the paths
-	dosym /usr/bin/plymouth /bin/plymouth
+	dosym /bin/plymouth /usr/bin/plymouth
+	dosym /sbin/plymouthd /usr/sbin/plymouthd
 	dosym /usr/sbin/plymouth-set-default-theme /sbin/plymouth-set-default-theme
-	dosym /usr/sbin/plymouthd /sbin/plymouthd
 
 	readme.gentoo_create_doc
 }

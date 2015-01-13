@@ -51,6 +51,8 @@ src_prepare() {
 }
 
 src_configure() {
+	epatch_user
+
 	local mytty=tty1
 	local myeconfargs=(
 		--with-release-file=/etc/gentoo-release
@@ -72,6 +74,7 @@ src_configure() {
 		$(use_enable gdm gdm-transition)
 		$(use_enable drm)
 		)
+
 	autotools-utils_src_configure
 }
 
