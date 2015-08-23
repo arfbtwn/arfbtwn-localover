@@ -9,11 +9,11 @@ DESCRIPTION="D-Bus for .NET"
 HOMEPAGE="https://github.com/arfbtwn/dbus-sharp"
 #SRC_URI="mirror://github/arfbtwn/${PN}/${P}.tar.gz"
 EGIT_REPO_URI="https://github.com/arfbtwn/dbus-sharp.git"
-EGIT_COMMIT="v0.8.1"
+EGIT_BRANCH="staging"
 
 LICENSE="MIT"
 SLOT="1"
-KEYWORDS="amd64 ppc x86"
+KEYWORDS="~amd64 ~ppc ~x86"
 IUSE=""
 
 RDEPEND="dev-lang/mono

@@ -9,7 +9,7 @@ DESCRIPTION="D-Bus for .NET"
 HOMEPAGE="https://github.com/arfbtwn/dbus-sharp"
 #SRC_URI="mirror://github/arfbtwn/${PN}/${P}.tar.gz"
 EGIT_REPO_URI="https://github.com/arfbtwn/dbus-sharp.git"
-EGIT_BRANCH="master"
+EGIT_COMMIT="v0.8"
 
 LICENSE="MIT"
 SLOT="1"
