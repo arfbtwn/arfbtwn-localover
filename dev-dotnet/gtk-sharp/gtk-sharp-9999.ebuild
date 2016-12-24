@@ -4,7 +4,7 @@
 
 EAPI="5"
 
-inherit dotnet autotools git-2
+inherit dotnet autotools base git-2
 
 SLOT="3"
 DESCRIPTION="gtk bindings for mono"
@@ -39,7 +39,6 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	eautoreconf 
-	libtoolize
 }
 
 src_configure() {

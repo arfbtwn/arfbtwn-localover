@@ -10,7 +10,7 @@ HOMEPAGE="https://github.com/mono/dbus-sharp-glib"
 EGIT_REPO_URI="https://github.com/mono/dbus-sharp-glib.git"
 
 LICENSE="MIT"
-SLOT="1"
+SLOT="2.0"
 KEYWORDS="amd64 ppc x86"
 IUSE=""
 

@@ -12,7 +12,7 @@ EGIT_REPO_URI="https://github.com/arfbtwn/dbus-sharp.git"
 EGIT_COMMIT="v0.8.1"
 
 LICENSE="MIT"
-SLOT="1"
+SLOT="2.0"
 KEYWORDS="amd64 ppc x86"
 IUSE=""
 

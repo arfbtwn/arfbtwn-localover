@@ -5,5 +5,11 @@
   <use>
     <flag name="tracker">Install dependencies for the tracker plugin</flag>
     <flag name="transcode">Install dependencies for transcoding support</flag>
+	<flag name="gstlaunch">Build the GStreamer launch plugin</flag>
+	<flag name="gstplaybin">Build the GStreamer playbin plugin</flag>
+	<flag name="mediaserver2">Build the MediaServer2 DBus Consumer plugin</flag>
+	<flag name="mediathek">Build the mediathek plugin</flag>
+	<flag name="mpris">Build the MPRIS2 DBus Consumer plugin</flag>
+	<flag name="ruih">Build the ruih plugin</flag>
   </use>
 </pkgmetadata>

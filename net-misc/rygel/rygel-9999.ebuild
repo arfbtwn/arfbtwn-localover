@@ -5,7 +5,7 @@
 EAPI="5"
 GCONF_DEBUG="no"
 
-inherit autotools git-2
+inherit eutils autotools git-2
 
 DESCRIPTION="Rygel is an open source UPnP/DLNA MediaServer"
 HOMEPAGE="http://live.gnome.org/Rygel"
@@ -14,7 +14,7 @@ EGIT_REPO_URI="git://git.gnome.org/rygel"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS=""
-IUSE="X nls +sqlite tracker test transcode"
+IUSE="test X nls +sqlite +tracker +transcode +mediaserver2 +mpris +mediathek +ruih +gstreamer +introspection"
 
 # The deps for tracker? and transcode? are just the earliest available
 # version at the time of writing this ebuild
@@ -23,13 +23,11 @@ RDEPEND="
 	>=dev-libs/libgee-0.8:0.8
 	>=dev-libs/libxml2-2.7:2
 	>=media-libs/gupnp-dlna-0.9.4:2.0
-	media-libs/gstreamer:1.0
-	media-libs/gst-plugins-base:1.0
-	media-plugins/gst-plugins-soup:1.0
 	>=net-libs/gssdp-0.13
 	>=net-libs/gupnp-0.19
 	>=net-libs/gupnp-av-0.12.4
 	>=net-libs/libsoup-2.34:2.4
+	media-libs/libmediaart:2.0[vala]
 	>=sys-apps/util-linux-2.20
 	x11-misc/shared-mime-info
 	sqlite? (
@@ -37,7 +35,15 @@ RDEPEND="
 		dev-libs/libunistring
 	)
 	tracker? ( >=app-misc/tracker-0.16 )
+	gstreamer? (
+		media-libs/gstreamer:1.0
+		media-libs/gst-plugins-base:1.0
+		media-plugins/gst-plugins-soup:1.0
+	)
 	transcode? (
+		media-libs/gstreamer:1.0
+		media-libs/gst-plugins-base:1.0
+		media-plugins/gst-plugins-soup:1.0
 		media-libs/gst-plugins-bad:1.0
 		media-plugins/gst-plugins-twolame:1.0
 		media-plugins/gst-plugins-libav:1.0
@@ -59,35 +65,47 @@ src_prepare() {
 
 	# runs gst-plugins-scanner on run with triggers sandbox violation
 	# trying to open dri
-	sed -e 's/rygel-media-engine-test$(EXEEXT)//' \
-		-e 's/rygel-playbin-renderer-test$(EXEEXT)//' \
-		-i tests/Makefile.in || die
+	if use test; then
+		sed -e 's/rygel-media-engine-test$(EXEEXT)//' \
+			-e 's/rygel-playbin-renderer-test$(EXEEXT)//' \
+			-i tests/Makefile.in || die
+	fi
 
 }
 
+#--enable-external-plugin enable MediaServer2 DBus consumer plugin
+#--enable-mpris-plugin   enable MPRIS2 DBus consumer plugin
+#--enable-mediathek-plugin enable ZDF Mediathek plugin
+#--enable-ruih-plugin    enable Ruih plugin
+#--enable-playbin-plugin enable GStreamer playbin plugin
+#--enable-gst-launch-plugin enable GStreamer launchline plugin
+#--enable-tracker-plugin enable Tracker plugin
 src_configure() {
-	export VALAC=$(which valac-0.22)
+	media=simple
+	if use gstreamer; then media=gstreamer; fi
+
 	econf \
-		--enable-gst-launch-plugin \
-		--enable-mediathek-plugin \
-		--with-media-engine=gstreamer \
-		$(use_enable nls) \
-		$(use_enable sqlite media-export-plugin) \
+		--with-media-engine=$media \
 		$(use_enable test tests) \
+		$(use_enable nls) \
+		$(use_enable introspection) \
+		$(use_enable sqlite media-export-plugin) \
 		$(use_enable tracker tracker-plugin) \
-		$(use_with X ui) 
+		$(use_enable mediaserver2 external-plugin) \
+		$(use_enable mpris mpris-plugin) \
+		$(use_enable mediathek mediathek-plugin) \
+		$(use_enable ruih ruih-plugin) \
+		$(use_enable gstreamer playbin-plugin) \
+		$(use_enable gstreamer gst-launch-plugin) \
+		$(use_with X ui)
 }
 
 src_compile() {
-	if [[ -f Makefile ]] || [[ -f GNUmakefile ]] || [[ -f makefile ]] ; then
-		emake;
-	fi
+	emake;
 }
 
 src_install() {
-	if [[ -f Makefile ]] || [[ -f GNUmakefile ]] || [[ -f makefile ]] ; then
-		emake DESTDIR="${D}" install;
-	fi
+	emake DESTDIR="${D}" install;
 
 	if ! declare -p DOCS >/dev/null 2>&1 ; then
 		local d;
