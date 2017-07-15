@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/app-vim/youcompleteme/youcompleteme-20130910.ebuild,v 1.2 2013/09/10 10:41:22 radhermit Exp $
 
 EAPI=5
-PYTHON_COMPAT=( python{2_6,2_7} )
+PYTHON_COMPAT=( python3_4 )
 USE_DOTNET=net40
 inherit git-r3 cmake-utils dotnet multilib python-single-r1 vim-plugin
 
@@ -49,6 +49,7 @@ src_configure() {
 	local mycmakeargs=(
 		$(cmake-utils_use_use clang CLANG_COMPLETER)
 		$(cmake-utils_use_use clang SYSTEM_LIBCLANG)
+		-DUSE_PYTHON2=OFF
 	)
 	cmake-utils_src_configure
 }
@@ -77,7 +78,9 @@ src_install() {
 	dodoc *.md
 	rm -r *.md *.sh COPYING.txt ${CMAKE_USE_DIR} || die
 	find python -name *test* -exec rm -rf {} + || die
-	rm third_party/ycmd/libclang.so || die
+	if ! use clang; then
+		rm third_party/ycmd/libclang.so || die
+	fi
 
 	vim-plugin_src_install
 

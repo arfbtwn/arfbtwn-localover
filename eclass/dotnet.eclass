@@ -87,7 +87,7 @@ exbuild() {
 # @DESCRIPTION: run xbuild with Release configuration and configured FRAMEWORK
 #				in the specified directory under "${S}"
 exbuild_dir() {
-	local conf=${2:=Release}
+	local conf=${2:-Release}
 	pushd "${S}/${1}"
 	xbuild /p:Configuration=${conf} /tv:4.0 /p:TargetFrameworkVersion=v"${FRAMEWORK}" || die
 	popd
