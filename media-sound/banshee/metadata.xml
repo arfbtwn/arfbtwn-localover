@@ -4,15 +4,43 @@
 <herd>dotnet</herd>
 <herd>gstreamer</herd>
 <use>
-	<flag name="bpm">Build beats per minute detection extension</flag>
 	<flag name="cdda">Build with audio CD support</flag>
 	<flag name="daap">Build with Daap support</flag>
-	<flag name="karma">Build with karma support</flag>
 	<flag name="gst-sharp">Build managed player engine</flag>
 	<flag name="gst-native">Build native player engine</flag>
 	<flag name="web">Enable support for plugins that access web-based services
 	such as Amazon and wikipedia (requires <pkg>net-libs/webkit-gtk</pkg>)</flag>
-	<flag name="youtube">Enable the Youtube plugin</flag>
-	<flag name="soundmenu">Ubuntu Unity Soundmenu?</flag>
+	<flag name="treeview">Use Gtk TreeView instead of Hyena's ListView</flag>
+
+	<flag name="beroe"></flag>  
+	<flag name="halie"></flag>
+	<flag name="muinshee"></flag>
+	<flag name="nereid"></flag>
+
+	<flag name="dap"></flag>
+	<flag name="mass-storage"></flag>
+	<flag name="karma">Build with karma support</flag>
+
+	<flag name="extension-audiobook"></flag>
+	<flag name="extension-booscript"></flag>
+	<flag name="extension-bpm">Build beats per minute detection extension</flag>
+	<flag name="extension-coverart"></flag>
+	<flag name="extension-daap"></flag>
+	<flag name="extension-librarywatcher"></flag>
+	<flag name="extension-mediapanel"></flag>
+	<flag name="extension-minimode"></flag>
+	<flag name="extension-mpris"></flag>
+	<flag name="extension-multimediakeys"></flag>
+	<flag name="extension-nowplaying"></flag>
+	<flag name="extension-playermigration"></flag>
+	<flag name="extension-playqueue"></flag>
+	<flag name="extension-podcasting"></flag>
+	<flag name="extension-remoteaudio"></flag>
+	<flag name="extension-soundmenu">Ubuntu Unity Soundmenu</flag>
+	<flag name="extension-torrent"></flag>
+	<flag name="extension-ubuntuone"></flag>
+	<flag name="extension-upnp"></flag>
+	<flag name="extension-wikipedia"></flag>
+	<flag name="extension-youtube">Enable the Youtube plugin</flag>
 </use>
 </pkgmetadata>

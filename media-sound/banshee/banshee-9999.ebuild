@@ -15,55 +15,37 @@ LICENSE="MIT"
 SLOT="0"
 KEYWORDS="amd64 x86"
 
-IUSE="doc test udev web gst-sharp +gst-native"
+IUSE="test doc daap udev web gst-sharp +gst-native"
 
-IUSE+=" gnome"
+IUSE+=" gnome clutter"
 
-IUSE+=" +nereid +halie +treeview"
+IUSE+=" +nereid +halie +beroe +muinshee +treeview"
 
-IUSE+=" +dap +mass-storage mtp ipod karma"
+IUSE+=" +mass-storage +mtp ipod karma"
 
-IUSE+=" boo bpm coverart daap mpris playqueue soundmenu youtube upnp"
+IUSE+=" user-help"
 
-# TODO:
-#
-#  moonlight
-#  tests
-#  beroe
-#  mediapanel
-#  muinshee
-#  gio
-#  gio-hardware
-#  remote-audio
-#  torrent
-#  ubuntuone
-#  amazonmp3
-#  amazonmp3-store
-#  audiobook
-#  emusic
-#  emusic-store
-#  filesystemqueue
-#  fixup
-#  internetarchive
-#  internetradio
-#  lastfm
-#  lastfmstreaming
-#  librarywatcher
-#  mediapanel
-#  minimode
-#  miroguide
-#  multimediakeys
-#  notificationarea
-#  nowplaying
-#  opticaldisc
-#  playermigration
-#  podcasting
-#  remoteaudio
-#  sample
-#  sqldebugconsole
-#  torrent
-#  ubuntuonemusicstore
-#  wikipedia
+EXTENSIONS=$(echo extension-{amazonmp3,amazonmp3-store,audiobook,booscript,bpm,coverart,daap})
+EXTENSIONS+=" "$(echo extension-{emusic,emusic-store,filesystemqueue,fixup,internetarchive})
+EXTENSIONS+=" "$(echo extension-{internetradio,lastfm,lastfmstreaming,librarywatcher})
+EXTENSIONS+=" "$(echo extension-{mediapanel,minimode,miroguide,mpris,multimediakeys})
+EXTENSIONS+=" "$(echo extension-{notificationarea,nowplaying,opticaldisc})
+EXTENSIONS+=" "$(echo extension-{playermigration,playqueue,podcasting})
+EXTENSIONS+=" "$(echo extension-{remoteaudio,soundmenu,sqldebugconsole})
+EXTENSIONS+=" "$(echo extension-{torrent,ubuntuone,upnp,wikipedia,youtube})
+
+#  --enable-mediapanel     Enable Mediapanel Client
+
+#  --enable-gio            Enable GIO for IO operations
+#  --enable-gio-hardware   Enable GIO Hardware backend
+
+IUSE+=" ${EXTENSIONS}"
+
+REQUIRED_USE="^^ ( gst-sharp gst-native )
+			  extension-daap? ( daap )
+			  extension-remoteaudio? ( daap )
+			  extension-youtube? ( web )
+			  extension-wikipedia? ( web )"
 
 RDEPEND="
 	>=dev-lang/mono-3
@@ -71,7 +53,6 @@ RDEPEND="
 	sys-apps/dbus
 	>=dev-dotnet/gnome-sharp-2
 	>=dev-dotnet/gtk-sharp-2.12.10
-	>=dev-dotnet/notify-sharp-0.4.0_pre20080912-r1
 	>=media-libs/gstreamer-1.0:1.0
 	media-plugins/gst-plugins-gconf:0.10
 	media-libs/musicbrainz:3
@@ -91,11 +72,8 @@ RDEPEND="
 		>=media-libs/libmtp-0.3.0
 	)
 	web? (
-		>=net-libs/webkit-gtk-1.2.2:2
-		>=net-libs/libsoup-gnome-2.26:2.4
-	)
-	youtube? (
-		>=dev-dotnet/google-gdata-sharp-1.4
+		>=net-libs/webkit-gtk-2.18
+		net-libs/libsoup:2.4
 	)
 	udev? (
 		app-misc/media-player-info
@@ -104,9 +82,14 @@ RDEPEND="
 		dev-dotnet/gkeyfile-sharp
 		dev-dotnet/gtk-sharp-beans
 	)
-	upnp? ( >=dev-dotnet/mono-upnp-0.1 )
 	gst-sharp? (
 		>=dev-dotnet/gstreamer-sharp-3.0
+	)
+	extension-booscript? ( dev-lang/boo )
+	extension-bpm? ( media-plugins/gst-plugins-soundtouch )
+	extension-upnp? ( >=dev-dotnet/mono-upnp-0.1 )
+	extension-youtube? (
+		>=dev-dotnet/google-gdata-sharp-1.4
 	)
 	test? ( >=dev-dotnet/nunit-2.5 )
 "
@@ -117,27 +100,37 @@ DEPEND="${RDEPEND}
 src_prepare () {
 	DOCS="AUTHORS HACKING NEWS README"
 
-	epatch_user
-
-	NOCONFIGURE=true ./autogen.sh
+	eautoreconf
 }
 
 src_configure() {
-	local myconf="--disable-dependency-tracking
+	local gst="--enable-gst=native"
+	if use gst-sharp; then
+		gst=--enable-gst=managed
+	fi
+
+	local base="--disable-dependency-tracking
 		--disable-static
 		--disable-maintainer-mode
 		--with-gconf-schema-file-dir=/etc/gconf/schemas
 		--with-vendor-build-id=Gentoo/${PN}/${PVR}
-		--disable-shave
-		--enable-release"
+		--enable-shave
+		--enable-release
+		$(use_with daap)
+		$(use_with web webkit)"
+
+	local ext=
+	for i in $EXTENSIONS
+	do
+		ext+=" $(use_enable $i ${i#extension-})"
+	done
 
 	econf \
-		${myconf} \
+		${base} \
+		${gst} \
+\
 		$(use_enable doc docs) \
 		$(use_enable doc user-help) \
-\
-		$(use_enable gst-sharp) \
-		$(use_enable gst-native) \
 \
 		$(use_enable gnome) \
 		$(use_enable gnome schemas-install) \
@@ -145,64 +138,17 @@ src_configure() {
 		$(use_enable udev gio-hardware) \
 \
 		$(use_enable treeview) \
-		$(use_enable web webkit) \
+		$(use_enable beroe) \
+		$(use_enable muinshee) \
 		$(use_enable nereid) \
 		$(use_enable halie) \
 \
-		$(use_enable dap) \
 		$(use_enable mass-storage) \
 		$(use_enable mtp) \
 		$(use_enable ipod appledevice) \
 		$(use_enable karma) \
 \
-		$(use_enable boo) \
-		$(use_enable boo booscript) \
-		$(use_enable bpm) \
-		$(use_enable coverart) \
-		$(use_enable daap) \
-		$(use_enable mpris) \
-		$(use_enable playqueue) \
-		$(use_enable soundmenu) \
-		$(use_enable upnp) \
-		$(use_enable upnp upnpclient) \
-		$(use_enable youtube)
-#  moonlight
-#  tests
-#  beroe
-#  mediapanel
-#  muinshee
-#  gio
-#  gio-hardware
-#  remote-audio
-#  torrent
-#  ubuntuone
-#  treeview
-#  amazonmp3
-#  amazonmp3-store
-#  audiobook
-#  emusic
-#  emusic-store
-#  filesystemqueue
-#  fixup
-#  internetarchive
-#  internetradio
-#  lastfm
-#  lastfmstreaming
-#  librarywatcher
-#  mediapanel
-#  minimode
-#  miroguide
-#  multimediakeys
-#  notificationarea
-#  nowplaying
-#  opticaldisc
-#  playermigration
-#  podcasting
-#  remoteaudio
-#  sample
-#  sqldebugconsole
-#  ubuntuonemusicstore
-#  wikipedia
+		${ext}
 }
 
 src_compile() {
