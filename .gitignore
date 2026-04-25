@@ -1,2 +1,8 @@
-*~
+# Portage
 metadata/
+
+# VIM
+*.swp
+
+# Backups
+*~
